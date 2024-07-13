@@ -1,0 +1,22 @@
+.circular-progress {
+  stroke: $red;
+
+  circle {
+    // transition: stroke-dashoffset 0.1s linear;
+    transition: stroke-dashoffset 0.1s linear, stroke 0.3s ease;
+  }
+}
+
+.bounce {
+  animation: bounce 1s;
+}
+
+@keyframes bounce {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.015);
+  }
+}

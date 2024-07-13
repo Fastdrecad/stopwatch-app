@@ -1,0 +1,67 @@
+.timer-input-form {
+  @include flex();
+  // flex-direction: column;
+  gap: 10px;
+
+  .input-wrapper {
+    @include flex();
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+
+    .input-box {
+      position: relative;
+
+      .seconds {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        pointer-events: none;
+        right: -30px;
+        font-size: 14px;
+      }
+    }
+
+    .timer-input {
+      background-color: $secondary-bg;
+      color: $white;
+      border: none;
+      font-size: 1.5rem;
+      padding: 1rem 1.5rem;
+      text-align: center;
+      cursor: text;
+      border-radius: 10px;
+      min-width: 50px;
+      transition: width 0.2s ease-in-out;
+
+      &::placeholder {
+        color: $white;
+        opacity: 1;
+      }
+
+      &:focus {
+        outline: none;
+        box-shadow: none;
+        text-indent: 0;
+      }
+    }
+
+    .set-timer-button {
+      font-size: 1.2rem;
+      background-color: transparent;
+      border: none;
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+      transition: background-color 0.3s, box-shadow 0.3s;
+      color: $white;
+
+      &:hover {
+        color: $green;
+      }
+    }
+  }
+}
+
+.hidden {
+  visibility: hidden;
+}

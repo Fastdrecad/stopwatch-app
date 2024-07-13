@@ -1,0 +1,17 @@
+.display {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 4rem;
+}
+
+.time-display {
+  position: absolute;
+  font-size: 3rem;
+  font-weight: 500;
+
+  span {
+    color: red;
+  }
+}

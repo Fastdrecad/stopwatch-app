@@ -1,0 +1,34 @@
+// layout styles
+
+html {
+  overflow: visible;
+  -ms-text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  @include center();
+  background-color: $black;
+  color: $font-color;
+  font-family: $font-family-body;
+  letter-spacing: $letter-spacing;
+  line-height: $line-height;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  position: relative;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+.stopwatch-page {
+  @include center();
+  flex-direction: column;
+  gap: 20px;
+  border: 2px solid $gray;
+  border-radius: 3px;
+  margin: auto;
+  width: 400px;
+  padding: 2rem;
+  height: fit-content;
+}

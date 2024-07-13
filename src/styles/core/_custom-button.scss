@@ -1,0 +1,36 @@
+.control-panel {
+  @include flex();
+  width: 100%;
+  justify-content: space-evenly;
+}
+.custom-button {
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 50%;
+  width: 100px;
+  height: 100px;
+  cursor: pointer;
+  outline: none;
+  border: 1px solid transparent;
+  transition: background-color 0.3s, color 0.3s;
+
+  &:hover {
+    opacity: 0.8;
+  }
+}
+
+// Custom styles for different button functionalities
+.start-button {
+  background-color: $primary-bg;
+  color: $primary-color;
+}
+
+.pause-button {
+  background-color: $ternary-bg;
+  color: $ternary-color;
+}
+
+.reset-button {
+  background-color: $danger-bg;
+  color: $danger-color;
+}
