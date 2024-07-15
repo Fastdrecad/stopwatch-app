@@ -3,15 +3,36 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 4rem;
 }
 
 .time-display {
+  @include form-font-style;
   position: absolute;
-  font-size: 3rem;
   font-weight: 500;
+  appearance: none;
+  display: flex;
+  align-items: flex-end;
 
   span {
-    color: red;
+    font-size: $base-font-size;
+    text-align: center;
+    display: inline-block;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+
+    @include media-breakpoint-up(md) {
+      font-size: 4.25rem;
+    }
+  }
+
+  .milliseconds {
+    font-size: $base-font-size/2;
+    line-height: 1.25;
+    margin-left: 4px;
+
+    @include media-breakpoint-up(md) {
+      line-height: 1.45;
+      font-size: 2rem;
+    }
   }
 }

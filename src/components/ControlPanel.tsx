@@ -5,13 +5,13 @@ interface ControlPanelProps {
   onStartPause: () => void;
   onReset: () => void;
   buttonLabel: string;
-  canStart: boolean;
+  isStartable: boolean;
 }
 
 const ControlPanel: React.FC<ControlPanelProps> = ({
   isActive,
   buttonLabel,
-  canStart,
+  isStartable,
   onStartPause,
   onReset
 }) => {
@@ -21,7 +21,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
         text={buttonLabel}
         className={isActive ? "pause-button" : "start-button"}
         onClick={onStartPause}
-        disabled={!canStart}
+        disabled={!isStartable}
       />
       <CustomButton text="Reset" className="reset-button" onClick={onReset} />
     </div>

@@ -1,5 +1,4 @@
 // layout styles
-
 html {
   overflow: visible;
   -ms-text-size-adjust: 100%;
@@ -10,7 +9,7 @@ body {
   @include center();
   background-color: $black;
   color: $font-color;
-  font-family: $font-family-body;
+  font-family: "Inter", sans-serif;
   letter-spacing: $letter-spacing;
   line-height: $line-height;
   height: 100vh;
@@ -24,11 +23,16 @@ body {
 .stopwatch-page {
   @include center();
   flex-direction: column;
-  gap: 20px;
-  border: 2px solid $gray;
-  border-radius: 3px;
+  gap: 75px;
   margin: auto;
-  width: 400px;
-  padding: 2rem;
-  height: fit-content;
+  border: none;
+  padding: 0 2rem;
+  width: 100vw;
+  padding: 0 0.75rem;
+  height: 100vh;
+  gap: 0;
+
+  @include media-breakpoint-up(md) {
+    // gap: 20px;
+  }
 }

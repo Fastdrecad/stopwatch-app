@@ -8,7 +8,10 @@
 }
 
 @mixin media-breakpoint-down($breakpoint) {
-  $max-width: map-get($breakpoints, $breakpoint) - 0.02; // To ensure it doesn't overlap with the next breakpoint
+  $max-width: map-get(
+    $breakpoints,
+    $breakpoint
+  ); // To ensure it doesn't overlap with the next breakpoint
 
   @media (max-width: $max-width) {
     @content;
@@ -28,4 +31,8 @@
   @include flex();
   justify-content: center;
   align-items: center;
+}
+
+@mixin form-font-style {
+  font-family: $font-family, sans-serif;
 }

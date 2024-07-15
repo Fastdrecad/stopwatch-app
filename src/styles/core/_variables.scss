@@ -1,7 +1,6 @@
 // sass variables
 // responsive breakpoints
 $breakpoints: (
-  xs: 0,
   sm: 576px,
   md: 768px,
   lg: 992px,
@@ -38,6 +37,8 @@ $font-weight-normal: 400;
 $font-weight-medium: 500;
 $font-weight-semibold: 600;
 $font-weight-bold: 700;
+
+$base-font-size: 3.25rem;
 
 $letter-spacing: 0.5px;
 $line-height: 1.5;

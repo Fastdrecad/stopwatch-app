@@ -1,1 +1,9 @@
 // Here you can add other styles
+input,
+button {
+  @include form-font-style;
+}
+
+input {
+  caret-color: $white;
+}

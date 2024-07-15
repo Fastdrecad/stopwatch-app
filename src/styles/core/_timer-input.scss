@@ -1,7 +1,5 @@
 .timer-input-form {
   @include flex();
-  // flex-direction: column;
-  gap: 10px;
 
   .input-wrapper {
     @include flex();
@@ -9,30 +7,63 @@
     align-items: center;
     gap: 5px;
 
+    .timer-label {
+      font-size: clamp(0.8rem, 4vw, 1.25rem);
+      font-weight: $font-weight-medium;
+
+      @include media-breakpoint-down(md) {
+        margin-bottom: 5px;
+      }
+
+      &.hidden {
+        visibility: hidden;
+      }
+    }
+
     .input-box {
       position: relative;
 
-      .seconds {
+      &:nth-child(2) {
+        font-size: 2.2rem;
+
+        @include media-breakpoint-up(sm) {
+          padding: 1rem 1.5rem;
+          font-size: 3rem;
+        }
+      }
+
+      .sec {
         position: absolute;
-        top: 50%;
+        top: 58%;
+        right: -40px;
+        font-size: clamp(0.8rem, 4vw, 1.25rem);
+        font-weight: $font-weight-semibold;
         transform: translateY(-50%);
         pointer-events: none;
-        right: -30px;
-        font-size: 14px;
+
+        @include media-breakpoint-up(sm) {
+          right: -25px;
+        }
       }
     }
 
     .timer-input {
+      min-width: 80px;
       background-color: $secondary-bg;
       color: $white;
-      border: none;
-      font-size: 1.5rem;
-      padding: 1rem 1.5rem;
+      border: 2px solid transparent;
+      font-size: 2.2rem;
+      padding: 0.7rem;
       text-align: center;
       cursor: text;
-      border-radius: 10px;
-      min-width: 50px;
+      border-radius: 8px;
       transition: width 0.2s ease-in-out;
+      transition: border 0.2s ease-in, box-shadow 0.2s ease;
+
+      @include media-breakpoint-up(sm) {
+        padding: 1rem 0.5rem;
+        font-size: 3rem;
+      }
 
       &::placeholder {
         color: $white;
@@ -45,23 +76,39 @@
         text-indent: 0;
       }
     }
-
-    .set-timer-button {
-      font-size: 1.2rem;
-      background-color: transparent;
-      border: none;
-      padding: 0.5rem 1rem;
-      cursor: pointer;
-      transition: background-color 0.3s, box-shadow 0.3s;
-      color: $white;
-
-      &:hover {
-        color: $green;
-      }
-    }
   }
 }
 
-.hidden {
-  visibility: hidden;
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba($white, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 8px rgba($black, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba($black, 0);
+  }
+}
+
+@keyframes border {
+  0% {
+    box-shadow: 0 0 0 0 rgba($green, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 8px rgba($black, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba($black, 0);
+  }
+}
+
+.animate {
+  animation: pulse 2.5s;
+  animation-iteration-count: 3;
+}
+
+.timer-input.time-set {
+  border: 2px solid #0ae71175 !important;
+  box-shadow: 0 0 8px $green;
 }

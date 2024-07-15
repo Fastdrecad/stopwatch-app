@@ -5,27 +5,24 @@ import Display from "./components/Display";
 import ControlPanel from "./components/ControlPanel";
 
 const App: React.FC = () => {
-  /**
-   * Implement the core of your task in this file.
-   */
-
-  const [targetSeconds, setTargetSeconds] = useState<number>(0);
-  const [seconds, setSeconds] = useState<number>(0);
+  const [targetMilliseconds, setTargetMilliseconds] = useState<number>(0);
+  const [milliseconds, setMilliseconds] = useState<number>(0);
   const [isActive, setIsActive] = useState<boolean>(false);
-  const [isButtonVisible, setIsButtonVisible] = useState<boolean>(true);
-  const [inputValue, setInputValue] = useState<string>("");
+  const [isButtonVisible, setIsButtonVisible] = useState<boolean>(false);
+  const [inputValue, setInputValue] = useState<string>("0");
   const [buttonLabel, setButtonLabel] = useState<string>("Start");
-  const [canStart, setCanStart] = useState<boolean>(false);
+  const [isStartable, setIsStartable] = useState<boolean>(false);
   const [totalTime, setTotalTime] = useState<number>(0);
+  const [isSet, setIsSet] = useState(false);
 
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
 
-    if (isActive && seconds > 0) {
+    if (isActive && milliseconds > 0) {
       interval = setInterval(() => {
-        setSeconds((seconds) => seconds - 1);
-      }, 1000);
-    } else if (seconds <= 0 && isActive) {
+        setMilliseconds((prevMilliseconds) => prevMilliseconds - 10);
+      }, 10);
+    } else if (milliseconds <= 0 && isActive) {
       clearInterval(interval!);
       setIsActive(false);
       setButtonLabel("Start");
@@ -34,55 +31,59 @@ const App: React.FC = () => {
     return () => {
       interval && clearInterval(interval);
     };
-  }, [isActive, seconds]);
+  }, [isActive, milliseconds]);
 
   const toggleStartPause = () => {
-    if (isActive && canStart) {
+    if (isActive && isStartable) {
       setIsActive(false);
       setButtonLabel("Resume");
     } else {
       setIsActive(true);
       setButtonLabel("Pause");
-      if (seconds <= 0 && targetSeconds > 0) {
-        setSeconds(targetSeconds);
+      if (milliseconds <= 0 && targetMilliseconds > 0) {
+        setMilliseconds(targetMilliseconds);
       }
     }
   };
 
   const handleReset = () => {
     setIsActive(false);
-    setSeconds(0);
-    setIsButtonVisible(true);
-    setInputValue("");
+    setMilliseconds(0);
+    setIsButtonVisible(false);
+    setInputValue("0");
     setTotalTime(0);
     setButtonLabel("Start");
-    setCanStart(false);
+    setIsStartable(false);
+    setIsSet(false);
   };
 
-  const handleSetTargetSeconds = (seconds: number) => {
-    setTargetSeconds(seconds);
-    setSeconds(seconds);
+  const handleSetTargetMilliseconds = (milliseconds: number) => {
+    setTargetMilliseconds(milliseconds);
+    setMilliseconds(milliseconds);
     setIsButtonVisible(false);
-    setInputValue(seconds.toString());
-    setCanStart(true);
-    setTotalTime(seconds);
+    setInputValue((milliseconds / 1000).toString());
+    setIsStartable(true);
+    setTotalTime(milliseconds);
   };
 
   return (
     <div className="stopwatch-page">
       <TimerInput
-        setTargetSeconds={handleSetTargetSeconds}
+        setTargetMilliseconds={handleSetTargetMilliseconds}
         isButtonVisible={isButtonVisible}
+        setIsButtonVisible={setIsButtonVisible}
         inputValue={inputValue}
         setInputValue={setInputValue}
+        isSet={isSet}
+        setIsSet={setIsSet}
       />
-      <Display time={seconds} totalTime={totalTime} isActive={isActive} />
+      <Display time={milliseconds} totalTime={totalTime} isActive={isActive} />
       <ControlPanel
         isActive={isActive}
         onStartPause={toggleStartPause}
         onReset={handleReset}
         buttonLabel={buttonLabel}
-        canStart={canStart}
+        isStartable={isStartable}
       />
     </div>
   );

@@ -2,13 +2,25 @@
   @include flex();
   width: 100%;
   justify-content: space-evenly;
+  margin-top: 1.5rem;
+
+  @include media-breakpoint-up(md) {
+    margin-top: 0;
+    width: 50%;
+  }
 }
+
 .custom-button {
-  padding: 10px 20px;
-  font-size: 16px;
+  font-family: $font-family-body !important;
+  font-weight: $font-weight-normal;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: clamp(100px, 20vw, 110px);
+  height: clamp(100px, 20vw, 110px);
+  font-size: clamp(0.8rem, 4vw, 1rem);
   border-radius: 50%;
-  width: 100px;
-  height: 100px;
+  white-space: nowrap;
   cursor: pointer;
   outline: none;
   border: 1px solid transparent;
@@ -17,6 +29,9 @@
   &:hover {
     opacity: 0.8;
   }
+
+  // @include media-breakpoint-up {
+  // }
 }
 
 // Custom styles for different button functionalities
@@ -33,4 +48,8 @@
 .reset-button {
   background-color: $danger-bg;
   color: $danger-color;
+}
+
+.set-timer-button {
+  margin-top: 15px;
 }

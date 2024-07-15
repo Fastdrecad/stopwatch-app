@@ -12,7 +12,7 @@ const CircularProgress: React.FC<CircularProgressProps> = ({
   isActive
 }) => {
   const radius = size / 2;
-  const strokeWidth = 6;
+  const strokeWidth = size > 450 ? 20 : 8;
   const normalizedRadius = radius - strokeWidth * 2;
   const circumference = normalizedRadius * 2 * Math.PI;
   const strokeDashoffset = circumference - (progress / 100) * circumference;
@@ -23,9 +23,9 @@ const CircularProgress: React.FC<CircularProgressProps> = ({
     if (isActive && progress > 0) {
       setStrokeColor("green");
     } else if (!isActive && progress === 100) {
-      setStrokeColor("orange");
-    } else {
       setStrokeColor("green");
+    } else {
+      setStrokeColor("orange");
     }
   }, [progress, isActive]);
 
