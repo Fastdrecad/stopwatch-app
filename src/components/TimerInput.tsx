@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useReducer, useRef, useState } from "react";
 import CustomButton from "./CustomButton";
 
 interface TimerInputProps {
@@ -35,13 +35,12 @@ const TimerInput: React.FC<TimerInputProps> = ({
     value = value.replace(/^0+/, "");
 
     // Allow input if it's a valid number format and doesn't exceed the length or character restrictions
-    if (value.length <= 5 && /^\d*\.?\d*$/.test(value)) {
+    if (/^\d*\.?\d*$/.test(value) && value.length <= 5) {
       setInputValue(value);
       const numericValue = parseFloat(value);
       const isValid = numericValue <= maxAllowedSeconds;
 
       // Update button visibility based on input validity
-      // setIsButtonVisible(isValid);
       isValid ? setIsButtonVisible(isValid) : setIsButtonVisible(false);
     }
   };
@@ -72,16 +71,12 @@ const TimerInput: React.FC<TimerInputProps> = ({
       setIsAnimate(false);
     }
     setIsFocused(true);
-    // setIsButtonVisible(!isButtonVisible);
   };
 
   const handleBlur = () => {
     const numericValue = parseFloat(inputValue);
     // Validate the input value when the input loses focus
     const isValid = numericValue <= maxAllowedSeconds;
-
-    // Additional visibility update on blur
-    // setIsButtonVisible(isValid);
 
     if (isNaN(numericValue) || !isValid) {
       setInputValue("0");
@@ -102,7 +97,7 @@ const TimerInput: React.FC<TimerInputProps> = ({
         <div className="input-box">
           <input
             ref={inputRef}
-            type="text"
+            type="number"
             value={inputValue}
             onChange={handleChange}
             onFocus={handleFocus}

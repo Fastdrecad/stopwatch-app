@@ -10,8 +10,6 @@ interface DisplayProps {
 const Display: React.FC<DisplayProps> = ({ time, totalTime, isActive }) => {
   const [size, setSize] = useState<number>(450);
 
-  const maxAllowedSeconds = 86399.099;
-
   useEffect(() => {
     const handleResize = () => {
       setSize(window.innerWidth < 768 ? 350 : 500);
