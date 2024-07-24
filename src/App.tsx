@@ -1,42 +1,29 @@
-import { useContext, useEffect } from "react";
-import "./styles/style.scss";
-import TimerInput from "./components/TimerInput";
-import Display from "./components/Display";
+import { useCallback, useContext, useEffect } from "react";
 import ControlPanel from "./components/ControlPanel";
+import Display from "./components/Display";
+import TimerInput from "./components/TimerInput";
 import { StopwatchContext } from "./context/StopwatchContext";
 import { tick, toggleActive } from "./state";
+import "./styles/style.scss";
 
 const App: React.FC = () => {
   const { state, dispatch } = useContext(StopwatchContext);
-  console.log(state);
+
+  // Memoize the interval callback
+  const handleTick = useCallback(() => {
+    if (state.milliseconds < state.targetMilliseconds) {
+      dispatch(tick());
+    } else {
+      dispatch(toggleActive(false));
+    }
+  }, [state.milliseconds, state.targetMilliseconds, dispatch]);
 
   useEffect(() => {
-    let interval: ReturnType<typeof setInterval> | undefined;
+    if (!state.isActive) return;
 
-    const clearIntervalIfExists = () => {
-      if (interval) {
-        clearInterval(interval);
-        interval = undefined;
-      }
-    };
-
-    if (state.isActive) {
-      interval = setInterval(() => {
-        if (state.milliseconds < state.targetMilliseconds) {
-          dispatch(tick());
-        } else {
-          clearIntervalIfExists();
-          dispatch(toggleActive(false));
-        }
-      }, 10);
-    } else {
-      clearIntervalIfExists();
-    }
-
-    return () => {
-      clearIntervalIfExists();
-    };
-  }, [state.isActive, state.milliseconds, state.targetMilliseconds, dispatch]);
+    const interval = setInterval(handleTick, 10);
+    return () => clearInterval(interval);
+  }, [state.isActive, handleTick]);
 
   return (
     <div className="stopwatch-page">

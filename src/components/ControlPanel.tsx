@@ -1,25 +1,25 @@
-import { useContext } from "react";
-import CustomButton from "./CustomButton";
+import { useCallback, useContext } from "react";
 import { StopwatchContext } from "../context/StopwatchContext";
 import {
   resetStopwatch,
   toggleButtonVisibillity,
   toggleStartPause
 } from "../state";
+import CustomButton from "./CustomButton";
 
 const ControlPanel: React.FC = () => {
   const { state, dispatch } = useContext(StopwatchContext);
 
-  const handleStartPause = () => {
+  const handleStartPause = useCallback(() => {
     dispatch(toggleStartPause(state.isStartable));
     if (state.isStartable) {
       dispatch(toggleButtonVisibillity(false));
     }
-  };
+  }, [dispatch, state.isStartable]);
 
-  const handleReset = () => {
+  const handleReset = useCallback(() => {
     dispatch(resetStopwatch());
-  };
+  }, [dispatch]);
 
   return (
     <div className="control-panel">

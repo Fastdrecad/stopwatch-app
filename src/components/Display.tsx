@@ -1,6 +1,6 @@
-import React, { useEffect, useState, useContext } from "react";
-import CircularProgress from "./CircularProgress";
+import React, { useContext, useEffect, useMemo, useState } from "react";
 import { StopwatchContext } from "../context/StopwatchContext";
+import CircularProgress from "./CircularProgress";
 
 const Display: React.FC = () => {
   const { state } = useContext(StopwatchContext);
@@ -18,25 +18,37 @@ const Display: React.FC = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const formatTime = (milliseconds: number) => {
-    const pad = (num: number, size: number = 2) =>
-      num.toString().padStart(size, "0");
+  const formatTime = useMemo(() => {
+    return (milliseconds: number) => {
+      const pad = (num: number, size: number = 2) =>
+        num.toString().padStart(size, "0");
 
-    const hours = pad(Math.floor(milliseconds / 3600000));
-    const minutes = pad(Math.floor((milliseconds % 3600000) / 60000));
-    const seconds = pad(Math.floor((milliseconds % 60000) / 1000));
-    const newMilliseconds = pad(Math.floor((milliseconds % 1000) / 10));
+      const hours = pad(Math.floor(milliseconds / 3600000));
+      const minutes = pad(Math.floor((milliseconds % 3600000) / 60000));
+      const seconds = pad(Math.floor((milliseconds % 60000) / 1000));
+      const newMilliseconds = pad(Math.floor((milliseconds % 1000) / 10));
 
-    return { hours, minutes, seconds, newMilliseconds };
-  };
+      return { hours, minutes, seconds, newMilliseconds };
+    };
+  }, []);
 
-  const timePartsForRendering = formatTime(state.targetMilliseconds);
-  const timePartsForCounting = formatTime(state.milliseconds);
+  const timePartsForRendering = useMemo(
+    () => formatTime(state.targetMilliseconds),
+    [state.targetMilliseconds, formatTime]
+  );
 
-  const progress =
-    state.targetMilliseconds > 0
-      ? (state.milliseconds / state.targetMilliseconds) * 100
-      : 0;
+  const timePartsForCounting = useMemo(
+    () => formatTime(state.milliseconds),
+    [state.milliseconds, formatTime]
+  );
+
+  const progress = useMemo(
+    () =>
+      state.targetMilliseconds > 0
+        ? (state.milliseconds / state.targetMilliseconds) * 100
+        : 0,
+    [state.milliseconds, state.targetMilliseconds]
+  );
 
   return (
     <div className="display">

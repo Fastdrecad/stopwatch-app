@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext } from "react";
 import { StopwatchContext } from "../context/StopwatchContext";
 
 interface CircularProgressProps {
@@ -18,25 +18,16 @@ const CircularProgress: React.FC<CircularProgressProps> = ({
   const circumference = normalizedRadius * 2 * Math.PI;
   const strokeDashoffset = circumference - (progress / 100) * circumference;
 
-  const [strokeColor, setStrokeColor] = useState("green");
-
-  useEffect(() => {
-    if (state.isActive && progress > 0) {
-      setStrokeColor("green");
-    } else if (!state.isActive && progress === 100) {
-      setStrokeColor("green");
-    } else {
-      setStrokeColor("orange");
-    }
-  }, [progress, state.isActive]);
-
-  const bounceClass = progress === 100 ? "bounce" : "";
+  const strokeColor =
+    (state.isActive && progress > 0) || (!state.isActive && progress === 100)
+      ? "green"
+      : "orange";
 
   return (
     <svg
       height={size}
       width={size}
-      className={`circular-progress ${bounceClass}`}
+      className={`circular-progress ${progress === 100 ? "bounce" : ""}`}
     >
       <circle
         fill="transparent"

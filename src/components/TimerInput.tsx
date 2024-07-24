@@ -1,11 +1,17 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
-import CustomButton from "./CustomButton";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState
+} from "react";
 import { StopwatchContext } from "../context/StopwatchContext";
 import {
   setInputValue,
   setTargetMilliseconds,
   toggleButtonVisibillity
 } from "../state";
+import CustomButton from "./CustomButton";
 
 const TimerInput: React.FC = () => {
   const { state, dispatch } = useContext(StopwatchContext);
@@ -24,44 +30,49 @@ const TimerInput: React.FC = () => {
   // Define the maximum allowed seconds
   const maxAllowedSeconds = 86399.099; // 23:59:59.099
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let value = e.target.value;
-    // Remove leading zeros (ensure first character isn't 0 unless it's the only character)
-    value = value.replace(/^0+/, "");
+  const handleChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      let value = e.target.value;
+      // Remove leading zeros (ensure first character isn't 0 unless it's the only character)
+      value = value.replace(/^0+/, "");
 
-    const numericValue = parseFloat(value);
-    const isValid = numericValue <= maxAllowedSeconds;
-    dispatch(toggleButtonVisibillity(isValid));
+      const numericValue = parseFloat(value);
+      const isValid = numericValue <= maxAllowedSeconds;
+      dispatch(toggleButtonVisibillity(isValid));
 
-    // Allow input if it's a valid number format and doesn't exceed the length or character restrictions
-    if (/^\d*\.?\d*$/.test(value) && value.length <= 5) {
-      dispatch(setInputValue(value));
-    }
-  };
+      // Allow input if it's a valid number format and doesn't exceed the length or character restrictions
+      if (/^\d*\.?\d*$/.test(value) && value.length <= 5) {
+        dispatch(setInputValue(value));
+      }
+    },
+    [dispatch, maxAllowedSeconds]
+  );
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const numericValue = parseInt(state.inputValue, 10);
-    if (!isNaN(numericValue) && numericValue <= maxAllowedSeconds) {
-      inputRef.current?.blur();
-      dispatch(setTargetMilliseconds(numericValue * 1000));
-    }
-  };
-
-  const handleFocus = () => {
+  const handleSubmit = useCallback(
+    (e: React.FormEvent) => {
+      e.preventDefault();
+      const numericValue = parseInt(state.inputValue, 10);
+      if (!isNaN(numericValue) && numericValue <= maxAllowedSeconds) {
+        inputRef.current?.blur();
+        dispatch(setTargetMilliseconds(numericValue * 1000));
+      }
+    },
+    [dispatch, state.inputValue, maxAllowedSeconds]
+  );
+  const handleFocus = useCallback(() => {
     if (state.inputValue === "0") {
       dispatch(setInputValue(""));
       setIsAnimate(false);
     }
-  };
+  }, [dispatch, state.inputValue]);
 
-  const handleBlur = () => {
+  const handleBlur = useCallback(() => {
     if (state.inputValue === "") {
       dispatch(setInputValue("0"));
     }
-  };
+  }, [dispatch, state.inputValue]);
 
-  const getLabel = () => {
+  const getLabel = useCallback(() => {
     const { isActive, inputValue, targetMilliseconds, milliseconds } = state;
 
     if (isActive) {
@@ -77,7 +88,7 @@ const TimerInput: React.FC = () => {
     } else {
       return "Reset stopwatch";
     }
-  };
+  }, [state]);
 
   return (
     <form onSubmit={handleSubmit} className="timer-input-form">
