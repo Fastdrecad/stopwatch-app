@@ -1,110 +1,102 @@
-import { useEffect, useReducer, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import CustomButton from "./CustomButton";
-
-interface TimerInputProps {
-  setTargetMilliseconds: (milliseconds: number) => void;
-  isButtonVisible: boolean;
-  inputValue: string;
-  setInputValue: (value: string) => void;
-  setIsButtonVisible: (visible: boolean) => void;
-  isSet: boolean;
-  setIsSet: (set: boolean) => void;
-}
-
-const TimerInput: React.FC<TimerInputProps> = ({
-  setTargetMilliseconds,
-  isButtonVisible,
-  setIsButtonVisible,
+import { StopwatchContext } from "../context/StopwatchContext";
+import {
   setInputValue,
-  inputValue,
-  isSet,
-  setIsSet
-}) => {
-  const [isFocused, setIsFocused] = useState(false);
+  setTargetMilliseconds,
+  toggleButtonVisibillity
+} from "../state";
+
+const TimerInput: React.FC = () => {
+  const { state, dispatch } = useContext(StopwatchContext);
+
   const [inputWidth, setInputWidth] = useState(60);
   const [isAnimate, setIsAnimate] = useState(true);
   const measureRef = useRef<HTMLSpanElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  useEffect(() => {
+    if (measureRef.current) {
+      setInputWidth(measureRef.current.offsetWidth + 40);
+    }
+  }, [state.inputValue]);
+
   // Define the maximum allowed seconds
-  const maxAllowedSeconds = 86399.099;
+  const maxAllowedSeconds = 86399.099; // 23:59:59.099
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let value = e.target.value;
     // Remove leading zeros (ensure first character isn't 0 unless it's the only character)
     value = value.replace(/^0+/, "");
 
+    const numericValue = parseFloat(value);
+    const isValid = numericValue <= maxAllowedSeconds;
+    dispatch(toggleButtonVisibillity(isValid));
+
     // Allow input if it's a valid number format and doesn't exceed the length or character restrictions
     if (/^\d*\.?\d*$/.test(value) && value.length <= 5) {
-      setInputValue(value);
-      const numericValue = parseFloat(value);
-      const isValid = numericValue <= maxAllowedSeconds;
-
-      // Update button visibility based on input validity
-      isValid ? setIsButtonVisible(isValid) : setIsButtonVisible(false);
+      dispatch(setInputValue(value));
     }
   };
 
-  useEffect(() => {
-    if (measureRef.current) {
-      setInputWidth(measureRef.current.offsetWidth + 40);
-    }
-  }, [inputValue]);
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const numericValue = parseInt(inputValue, 10);
-    // Only process submission if the value is within the valid range
+    const numericValue = parseInt(state.inputValue, 10);
     if (!isNaN(numericValue) && numericValue <= maxAllowedSeconds) {
-      setInputValue(""); // Clear the input if it's not valid upon leaving the input
-      setTargetMilliseconds(numericValue * 1000); // Convert seconds to milliseconds
-      setIsSet(true);
       inputRef.current?.blur();
-      setIsButtonVisible(false);
+      dispatch(setTargetMilliseconds(numericValue * 1000));
     }
   };
 
   const handleFocus = () => {
-    if (inputValue === "0") {
-      setInputValue(""); // Clear the "0" when the user focuses on the input
-      setIsButtonVisible(isButtonVisible);
+    if (state.inputValue === "0") {
+      dispatch(setInputValue(""));
       setIsAnimate(false);
     }
-    setIsFocused(true);
   };
 
   const handleBlur = () => {
-    const numericValue = parseFloat(inputValue);
-    // Validate the input value when the input loses focus
-    const isValid = numericValue <= maxAllowedSeconds;
+    if (state.inputValue === "") {
+      dispatch(setInputValue("0"));
+    }
+  };
 
-    if (isNaN(numericValue) || !isValid) {
-      setInputValue("0");
-      setIsButtonVisible(false);
-    } else if (inputValue && isSet) {
-      setIsButtonVisible(false);
+  const getLabel = () => {
+    const { isActive, inputValue, targetMilliseconds, milliseconds } = state;
+
+    if (isActive) {
+      return "Stopwatch Running...";
+    } else if (parseInt(inputValue) === 0 || inputValue === "") {
+      return "Set Stopwatch";
+    } else if (targetMilliseconds > 0 && !isActive && milliseconds === 0) {
+      return "Time Set Successfully!";
+    } else if (!isActive && milliseconds === 0) {
+      return "Setting Your Stopwatch...";
+    } else if (milliseconds < targetMilliseconds) {
+      return "Paused";
     } else {
-      setIsButtonVisible(true);
+      return "Reset stopwatch";
     }
   };
 
   return (
     <form onSubmit={handleSubmit} className="timer-input-form">
       <div className="input-wrapper">
-        <p className={`timer-label ${!isSet ? "hidden" : ""} `}>
-          Timer set for:
-        </p>
+        <p className={`timer-label `}>{getLabel()}</p>
         <div className="input-box">
           <input
+            min={0}
+            max={Math.floor(maxAllowedSeconds)}
             ref={inputRef}
             type="number"
-            value={inputValue}
+            value={state.inputValue}
+            disabled={state.isStartable}
             onChange={handleChange}
             onFocus={handleFocus}
             onBlur={handleBlur}
-            placeholder={isFocused ? "" : ""}
+            placeholder={""}
             className={`timer-input ${isAnimate ? "animate" : ""} ${
-              isSet ? "time-set" : ""
+              state.isSet ? "time-set" : ""
             }`}
             style={{ width: `${inputWidth}px` }}
           />
@@ -116,17 +108,19 @@ const TimerInput: React.FC<TimerInputProps> = ({
               whiteSpace: "pre"
             }}
           >
-            {inputValue || "0"}
+            {state.inputValue || "0"}
           </span>
-          {inputValue && <span className="sec">sec</span>}
+          {state.inputValue && <span className="sec">sec</span>}
         </div>
         <CustomButton
-          disabled={!isButtonVisible}
+          disabled={!state.isButtonVisible}
           text="Set Time"
           className="set-timer-button"
-          color={!isButtonVisible ? "#a0a0a0" : "rgb(10, 231, 18)"}
+          color={!state.isButtonVisible ? "#a0a0a0" : "rgb(10, 231, 18)"}
           background={
-            !isButtonVisible ? "rgb(138 138 138 / 20%)" : "rgb(10 231 18 / 20%)"
+            !state.isButtonVisible
+              ? "rgb(138 138 138 / 20%)"
+              : "rgb(10 231 18 / 20%)"
           }
         />
       </div>

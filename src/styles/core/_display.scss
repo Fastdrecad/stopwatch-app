@@ -36,3 +36,45 @@
     }
   }
 }
+
+.time-display-second {
+  @include form-font-style;
+  position: absolute;
+  top: 30%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-weight: 500;
+  appearance: none;
+  display: flex;
+  align-items: flex-end;
+
+  .time-label {
+    @include center();
+    flex-direction: column;
+    gap: 5px;
+
+    span:first-child {
+      font-size: 1rem;
+      margin-left: -5px;
+    }
+
+    &:nth-child(3) {
+      span:first-child {
+        margin-left: 0;
+      }
+    }
+  }
+
+  span {
+    font-size: calc($base-font-size/3);
+    text-align: center;
+    display: inline-block;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+    color: $orange;
+
+    @include media-breakpoint-up(md) {
+      font-size: 1.75rem;
+    }
+  }
+}

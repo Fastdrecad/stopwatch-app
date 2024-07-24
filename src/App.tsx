@@ -1,91 +1,50 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect } from "react";
 import "./styles/style.scss";
 import TimerInput from "./components/TimerInput";
 import Display from "./components/Display";
 import ControlPanel from "./components/ControlPanel";
+import { StopwatchContext } from "./context/StopwatchContext";
+import { tick, toggleActive } from "./state";
 
 const App: React.FC = () => {
-  const [targetMilliseconds, setTargetMilliseconds] = useState<number>(0);
-  const [milliseconds, setMilliseconds] = useState<number>(0);
-  const [isActive, setIsActive] = useState<boolean>(false);
-  const [isButtonVisible, setIsButtonVisible] = useState<boolean>(false);
-  const [inputValue, setInputValue] = useState<string>("0");
-  const [buttonLabel, setButtonLabel] = useState<string>("Start");
-  const [isStartable, setIsStartable] = useState<boolean>(false);
-  const [totalTime, setTotalTime] = useState<number>(0);
-  const [isSet, setIsSet] = useState(false);
+  const { state, dispatch } = useContext(StopwatchContext);
+  console.log(state);
 
   useEffect(() => {
-    let interval: NodeJS.Timeout | null = null;
+    let interval: ReturnType<typeof setInterval> | undefined;
 
-    if (isActive && milliseconds > 0) {
+    const clearIntervalIfExists = () => {
+      if (interval) {
+        clearInterval(interval);
+        interval = undefined;
+      }
+    };
+
+    if (state.isActive) {
       interval = setInterval(() => {
-        setMilliseconds((prevMilliseconds) => prevMilliseconds - 10);
+        if (state.milliseconds < state.targetMilliseconds) {
+          dispatch(tick());
+        } else {
+          clearIntervalIfExists();
+          dispatch(toggleActive(false));
+        }
       }, 10);
-    } else if (milliseconds <= 0 && isActive) {
-      clearInterval(interval!);
-      setIsActive(false);
-      setButtonLabel("Start");
+    } else {
+      clearIntervalIfExists();
     }
 
     return () => {
-      interval && clearInterval(interval);
+      clearIntervalIfExists();
     };
-  }, [isActive, milliseconds]);
-
-  const toggleStartPause = () => {
-    if (isActive && isStartable) {
-      setIsActive(false);
-      setButtonLabel("Resume");
-    } else {
-      setIsActive(true);
-      setButtonLabel("Pause");
-      if (milliseconds <= 0 && targetMilliseconds > 0) {
-        setMilliseconds(targetMilliseconds);
-      }
-    }
-  };
-
-  const handleReset = () => {
-    setIsActive(false);
-    setMilliseconds(0);
-    setIsButtonVisible(false);
-    setInputValue("0");
-    setTotalTime(0);
-    setButtonLabel("Start");
-    setIsStartable(false);
-    setIsSet(false);
-  };
-
-  const handleSetTargetMilliseconds = (milliseconds: number) => {
-    setTargetMilliseconds(milliseconds);
-    setMilliseconds(milliseconds);
-    setIsButtonVisible(false);
-    setInputValue((milliseconds / 1000).toString());
-    setIsStartable(true);
-    setTotalTime(milliseconds);
-  };
+  }, [state.isActive, state.milliseconds, state.targetMilliseconds, dispatch]);
 
   return (
     <div className="stopwatch-page">
-      <TimerInput
-        setTargetMilliseconds={handleSetTargetMilliseconds}
-        isButtonVisible={isButtonVisible}
-        setIsButtonVisible={setIsButtonVisible}
-        inputValue={inputValue}
-        setInputValue={setInputValue}
-        isSet={isSet}
-        setIsSet={setIsSet}
-      />
-      <Display time={milliseconds} totalTime={totalTime} isActive={isActive} />
-      <ControlPanel
-        isActive={isActive}
-        onStartPause={toggleStartPause}
-        onReset={handleReset}
-        buttonLabel={buttonLabel}
-        isStartable={isStartable}
-      />
+      <TimerInput />
+      <Display />
+      <ControlPanel />
     </div>
   );
 };
+
 export default App;
